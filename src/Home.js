@@ -59,8 +59,7 @@ class Home extends Component {
       reactComponentsMounted: false,
       landingPage: true,
       navPosition: "middle",
-      moveNavBar: false,
-      cssComponentDisplayed: ''
+      moveNavBar: false
     };
   }
 
@@ -85,8 +84,8 @@ class Home extends Component {
     cssRenderer = this.createCssRenderer();
     container = document.createElement("div");
     document.body.appendChild(container);
+    container.appendChild(glRenderer.domElement);
     container.appendChild(cssRenderer.domElement);
-    cssRenderer.domElement.appendChild(glRenderer.domElement);
     glScene = new THREE.Scene();
     cssScene = new THREE.Scene();
     // controls = new OrbitControls(camera, glRenderer.domElement);
@@ -124,6 +123,89 @@ class Home extends Component {
     let intersectCss = raycaster.intersectObject(aboutObj);
     if (intersectCss.length > 0) {
       console.log("intersected About!!");
+    }
+  };
+
+  update = () => {
+    requestAnimationFrame(this.update);
+    glRenderer.render(glScene, camera);
+    cssRenderer.render(cssScene, camera);
+    raycaster.setFromCamera(mouseCoords, camera);
+
+    if (mouseMoved && logo && about && contact && projects && client) {
+      var uniforms = heightmapVariable.material.uniforms;
+
+      // raycast water
+      var intersectWater = raycaster.intersectObject(meshRay);
+      if (intersectWater.length > 0) {
+        var point = intersectWater[0].point;
+        uniforms["mousePos"].value.set(point.x, point.z);
+      } else {
+        uniforms["mousePos"].value.set(10000, 10000);
+      }
+      mouseMoved = false;
+
+      if (this.state.showWater) {
+        waterUniforms["heightmap"].value = gpuCompute.getCurrentRenderTarget(
+          heightmapVariable
+        ).texture;
+        gpuCompute.compute();
+      }
+
+      // raycast buttons
+      var intersectButtons = raycaster.intersectObjects([
+        logo,
+        about,
+        contact,
+        projects,
+        client
+      ]);
+      if (intersectButtons.length > 0) {
+        if (intersected !== intersectButtons[0].object) {
+          if (intersected) {
+            intersected.material.emissive.setHex(intersected.currentHex);
+          }
+          intersected = intersectButtons[0].object;
+          intersected.currentHex = intersected.material.emissive.getHex();
+          intersected.material.emissive.setHex(0xff0000);
+          // console.log("intersected button");
+        }
+      } else {
+        if (intersected)
+          intersected.material.emissive.setHex(intersected.currentHex);
+        intersected = null;
+      }
+    }
+    //raycast cssScene
+
+    let intersectCssChildren = raycaster.intersectObjects(cssScene.children);
+    if (intersectCssChildren.length > 0) {
+      console.log("intersected CssChildren!!");
+    }
+
+    //animates the navBar onClick
+    if (this.state.showWater === false) {
+      const scaleY = new THREE.Vector3(1, 0.5, 1);
+      const scaleLogo = new THREE.Vector3(1, 1, 1);
+
+      logo.scale.copy(scaleLogo);
+      logoType.scale.copy(scaleLogo);
+      contact.scale.copy(scaleY);
+      projects.scale.copy(scaleY);
+      client.scale.copy(scaleY);
+      about.scale.copy(scaleY);
+      if (logo.position.y <= 1.75) {
+        logo.position.y += 0.3;
+        about.position.y += 0.3;
+        contact.position.y += 0.3;
+        projects.position.y += 0.3;
+        client.position.y += 0.3;
+        logoType.position.y += 0.3;
+        aboutType.position.y += 0.3;
+        contactType.position.y += 0.3;
+        projectsType.position.y += 0.3;
+        clientType.position.y += 0.3;
+      }
     }
   };
 
@@ -227,30 +309,29 @@ class Home extends Component {
     this.initWater();
   };
 
+  onClick = () => {
+    console.log("this.onClick fired");
+    this.setState(() => ({ show2D: true, showWater: false }));
+  };
+
   // Attached to logo to hide everything
   hideAllReactComponents = () => {
-    if (this.state.show2D) {
-      cssRenderer.domElement.style.zIndex = -1;
-      glScene.remove(plane);
-      this.setState({ moveNavBar: true, cssComponentDisplayed:'', show2D: false, showWater: true });
-      Object.entries(reactComponentsObj).forEach(
-        ([key, value]) => (value.position.z = offScreenZPosition2D)
-      );
-    }
+    cssRenderer.domElement.style.zIndex = -1;
+    glScene.remove(plane);
+    this.setState({ moveNavBar: true, show2D: false, showWater: true });
+    Object.entries(reactComponentsObj).forEach(
+      ([key, value]) => (value.position.z = offScreenZPosition2D)
+    );
   };
 
   // Show react component
   showReactComponent = reactComponentName => {
     // Checks a second click: is the CSS renderer is visible
-    if (parseInt(cssRenderer.domElement.style.zIndex, 10) === 0 && this.state.cssComponentDisplayed === reactComponentName) {
+    if (parseInt(cssRenderer.domElement.style.zIndex, 10) === 0) {
       this.hideAllReactComponents();
-    } else if (parseInt(cssRenderer.domElement.style.zIndex, 10) === 0 && this.state.cssComponentDisplayed !== reactComponentName) {
-      reactComponentsObj[this.state.cssComponentDisplayed].position.z = offScreenZPosition2D;
-      reactComponentsObj[reactComponentName].position.z = zPosition2D;
-      this.setState({ cssComponentDisplayed: reactComponentName });
     } else {
       reactComponentsObj[reactComponentName].position.z = zPosition2D;
-      this.setState({ moveNavBar: true, cssComponentDisplayed: reactComponentName, show2D: true, showWater: false });
+      this.setState({ moveNavBar: true, show2D: true, showWater: false });
       plane = this.createPlane(
         window.innerWidth,
         window.innerHeight,
@@ -263,6 +344,7 @@ class Home extends Component {
   };
 
   loadAssets = () => {
+    let onClick = this.onClick.bind(this);
     let showReactComponent = this.showReactComponent.bind(this);
     let hideAllReactComponents = this.hideAllReactComponents.bind(this);
 
@@ -322,6 +404,7 @@ class Home extends Component {
             if (child.isMesh) {
               child.material = new THREE.MeshStandardMaterial(iconParams);
               child.scale.copy(scale);
+              child.callback = () => onClick();
               logo = child;
             }
           });
@@ -670,7 +753,6 @@ class Home extends Component {
         var intersectWater = raycaster.intersectObject(meshRay);
         // raycast water
         if (intersectWater.length > 0) {
-          // console.log("intersected water");
           var point = intersectWater[0].point;
           uniforms["mousePos"].value.set(point.x, point.z);
         } else {
