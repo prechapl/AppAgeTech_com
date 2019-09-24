@@ -83,8 +83,9 @@ class Home extends Component {
     glRenderer = this.createGlRenderer();
     cssRenderer = this.createCssRenderer();
     container = document.createElement("div");
-    document.body.appendChild(container);
+    container.appendChild(glRenderer.domElement);
     container.appendChild(cssRenderer.domElement);
+    document.body.appendChild(container);
     cssRenderer.domElement.appendChild(glRenderer.domElement);
     glScene = new THREE.Scene();
     cssScene = new THREE.Scene();
