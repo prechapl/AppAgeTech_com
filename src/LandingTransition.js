@@ -20,22 +20,6 @@ export default function LandingTransition(renderer, clearColor, toggleTransition
     this.camera.position.z = 7.5;
     const scene = new THREE.Scene();
 
-    // Document functions --> should be moved to parent component
-    const onDocumentMouseDown = event => {
-        event.preventDefault();
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, this.camera);
-        let intersects = raycaster.intersectObjects(scene.children, true);
-        if (intersects.length > 0) {
-            if (intersects[0].object.callback) {
-                intersects[0].object.callback();
-                document.removeEventListener('mousedown', onDocumentMouseDown, false);
-            }
-        }
-    }
-    document.addEventListener('mousedown', onDocumentMouseDown, false);
-
     // Object callback function
     const startTransition = (objectName) => {
         console.log('Objected has been clicked:' + objectName)
@@ -113,6 +97,26 @@ export default function LandingTransition(renderer, clearColor, toggleTransition
         // scene.background = cubeGenerator.renderTarget;
         scene.background = new THREE.Color(0x000000);
     });
+
+    this.removeLandingMouseDown = () => {
+        document.removeEventListener('mousedown', onDocumentMouseDown, false);
+    }
+
+    // Document functions --> should be moved to parent component
+    const onDocumentMouseDown = event => {
+        event.preventDefault();
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, this.camera);
+        let intersects = raycaster.intersectObjects([icon], true);
+        if (intersects.length > 0) {
+            if (intersects[0].object.callback) {
+                intersects[0].object.callback();
+                this.removeLandingMouseDown();
+            }
+        }
+    }
+    document.addEventListener('mousedown', onDocumentMouseDown, false);
 
     const starForge = () => {
         var starQty = 800000;

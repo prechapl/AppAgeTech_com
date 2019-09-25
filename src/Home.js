@@ -68,16 +68,18 @@ class Home extends Component {
     this.initialize();
     this.loadAssets();
     this.update();
+    this.matchRenderToLocation();
     // this.lighting();
   }
 
-  raycastCss = () => {
-    raycaster.setFromCamera(mouseCoords, camera);
-    let aboutObj = reactComponentsObj["about"];
-    console.log("aboutObj", aboutObj);
-    let intersectCss = raycaster.intersectObject(aboutObj);
-    if (intersectCss.length > 0) {
-      console.log("intersected About!!");
+  matchRenderToLocation = () => {
+    const location = this.props.location.pathname.substring(1);
+    if (location !== "") {
+      this.setState({ landingPage: false });
+      landingScene.removeLandingMouseDown();
+      if (reactComponentsObj[location]) {
+        this.showReactComponent(location);
+      }
     }
   };
 
@@ -131,6 +133,7 @@ class Home extends Component {
   toggleTransition = () => {
     if (this.state.landingPage === true) {
       this.setState({ landingPage: false });
+      this.props.history.push("/home");
     } else {
       this.setState({ landingPage: true });
     }
@@ -195,6 +198,8 @@ class Home extends Component {
       Object.entries(reactComponentsObj).forEach(
         ([key, value]) => (value.position.z = offScreenZPosition2D)
       );
+      // Pushes location back to home
+      this.props.history.push(`/home`);
     }
   };
 
@@ -210,11 +215,16 @@ class Home extends Component {
       parseInt(cssRenderer.domElement.style.zIndex, 10) === 0 &&
       this.state.cssComponentDisplayed !== reactComponentName
     ) {
+      // Sets current css object to offscreen
       reactComponentsObj[
         this.state.cssComponentDisplayed
       ].position.z = offScreenZPosition2D;
+      // Brings forward selected css object
       reactComponentsObj[reactComponentName].position.z = zPosition2D;
+      // Sets state with the name of the currently displayed object
       this.setState({ cssComponentDisplayed: reactComponentName });
+      // Pushes location to URL bar
+      this.props.history.push(`/${reactComponentName}`);
     } else {
       reactComponentsObj[reactComponentName].position.z = zPosition2D;
       this.setState({
@@ -231,6 +241,10 @@ class Home extends Component {
       );
       glScene.add(plane);
       cssRenderer.domElement.style.zIndex = 0;
+      // Pushes location to URL bar
+      if (this.props.location.pathname !== `/${reactComponentName}`) {
+        this.props.history.push(`/${reactComponentName}`);
+      }
     }
   };
 
@@ -563,56 +577,58 @@ class Home extends Component {
   };
 
   checkNavBarMove = () => {
-    if (this.state.navPosition === "middle") {
-      // Moving navbar up
-      if (this.state.moveNavBar === true) {
-        const scaleY = new THREE.Vector3(1, 0.5, 1);
-        const scaleLogo = new THREE.Vector3(1, 1, 1);
-        logo.scale.copy(scaleLogo);
-        logoType.scale.copy(scaleLogo);
-        contact.scale.copy(scaleY);
-        projects.scale.copy(scaleY);
-        client.scale.copy(scaleY);
-        about.scale.copy(scaleY);
-        if (logo.position.y <= 1.75) {
-          logo.position.y += 0.3;
-          about.position.y += 0.3;
-          contact.position.y += 0.3;
-          projects.position.y += 0.3;
-          client.position.y += 0.3;
-          logoType.position.y += 0.3;
-          aboutType.position.y += 0.3;
-          contactType.position.y += 0.3;
-          projectsType.position.y += 0.3;
-          clientType.position.y += 0.3;
-        } else {
-          this.setState({ moveNavBar: false, navPosition: "top" });
+    if (logo && logoType && contact && projects && client && about) {
+      if (this.state.navPosition === "middle") {
+        // Moving navbar up
+        if (this.state.moveNavBar === true) {
+          const scaleY = new THREE.Vector3(1, 0.5, 1);
+          const scaleLogo = new THREE.Vector3(1, 1, 1);
+          logo.scale.copy(scaleLogo);
+          logoType.scale.copy(scaleLogo);
+          contact.scale.copy(scaleY);
+          projects.scale.copy(scaleY);
+          client.scale.copy(scaleY);
+          about.scale.copy(scaleY);
+          if (logo.position.y <= 1.75) {
+            logo.position.y += 0.3;
+            about.position.y += 0.3;
+            contact.position.y += 0.3;
+            projects.position.y += 0.3;
+            client.position.y += 0.3;
+            logoType.position.y += 0.3;
+            aboutType.position.y += 0.3;
+            contactType.position.y += 0.3;
+            projectsType.position.y += 0.3;
+            clientType.position.y += 0.3;
+          } else {
+            this.setState({ moveNavBar: false, navPosition: "top" });
+          }
         }
-      }
-    } else if (this.state.navPosition === "top") {
-      // Moving navbar down
-      if (this.state.moveNavBar === true) {
-        const scaleY = new THREE.Vector3(1, 1, 1);
-        const scaleLogo = new THREE.Vector3(1.3, 1.3, 1.3);
-        logo.scale.copy(scaleLogo);
-        logoType.scale.copy(scaleLogo);
-        contact.scale.copy(scaleY);
-        projects.scale.copy(scaleY);
-        client.scale.copy(scaleY);
-        about.scale.copy(scaleY);
-        if (logo.position.y >= 0) {
-          logo.position.y -= 0.3;
-          about.position.y -= 0.3;
-          contact.position.y -= 0.3;
-          projects.position.y -= 0.3;
-          client.position.y -= 0.3;
-          logoType.position.y -= 0.3;
-          aboutType.position.y -= 0.3;
-          contactType.position.y -= 0.3;
-          projectsType.position.y -= 0.3;
-          clientType.position.y -= 0.3;
-        } else {
-          this.setState({ moveNavBar: false, navPosition: "middle" });
+      } else if (this.state.navPosition === "top") {
+        // Moving navbar down
+        if (this.state.moveNavBar === true) {
+          const scaleY = new THREE.Vector3(1, 1, 1);
+          const scaleLogo = new THREE.Vector3(1.3, 1.3, 1.3);
+          logo.scale.copy(scaleLogo);
+          logoType.scale.copy(scaleLogo);
+          contact.scale.copy(scaleY);
+          projects.scale.copy(scaleY);
+          client.scale.copy(scaleY);
+          about.scale.copy(scaleY);
+          if (logo.position.y >= 0) {
+            logo.position.y -= 0.3;
+            about.position.y -= 0.3;
+            contact.position.y -= 0.3;
+            projects.position.y -= 0.3;
+            client.position.y -= 0.3;
+            logoType.position.y -= 0.3;
+            aboutType.position.y -= 0.3;
+            contactType.position.y -= 0.3;
+            projectsType.position.y -= 0.3;
+            clientType.position.y -= 0.3;
+          } else {
+            this.setState({ moveNavBar: false, navPosition: "middle" });
+          }
         }
       }
     }
@@ -698,15 +714,6 @@ class Home extends Component {
       if (intersectButtonsMd[0].object.callback) {
         intersectButtonsMd[0].object.callback();
       }
-    }
-  };
-
-  onDocumentMouseDownCss = event => {
-    // event.preventDefault();
-    this.setMouseCoords(event.clientX, event.clientY);
-    const intersectCssChildren = raycaster.intersectObjects(cssScene.children);
-    if (intersectCssChildren.length > 0) {
-      console.log("intersected CssChildren in onDocumentMouseDownCss!!");
     }
   };
 
