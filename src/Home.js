@@ -41,10 +41,7 @@ let BOUNDS = 256;
 let plane;
 let landingScene;
 
-//this sets 2D scale - <h4> should be 16px in hieght
-// let zPosition2D = -2928;
 let zPosition2D = 215;
-// let zPosition2D = 0;
 let offScreenZPosition2D = 10000;
 
 const reactComponents = ["about", "contact", "projects", "client"];
@@ -70,7 +67,6 @@ class Home extends Component {
     this.loadAssets();
     this.update();
     this.matchRenderToLocation();
-    // this.lighting();
   }
 
   matchRenderToLocation = () => {
@@ -82,17 +78,6 @@ class Home extends Component {
         this.showReactComponent(location);
       }
     }
-  };
-
-  lighting = () => {
-    const spotLight1 = new THREE.SpotLight(0xffffff, 1.2, 0, Math.PI / 3);
-    spotLight1.position.set(0, -500, 100);
-    spotLight1.lookAt(0, 0, 0);
-    spotLight1.penumbra = 1;
-    spotLight1.angle = 1;
-    // const spotLightHelper1 = new THREE.SpotLightHelper(spotLight1);
-    // glScene.add(spotLightHelper1);
-    glScene.add(spotLight1);
   };
 
   createGlRenderer = () => {
@@ -450,8 +435,6 @@ class Home extends Component {
   initWater = () => {
     console.log("initWater fired!");
     const zPos = this.state.showWater ? 0 : -5000;
-
-    // const materialColor = 0xa7ebff;
     const materialColor = 0x000000;
     var geometry = new THREE.PlaneBufferGeometry(
       BOUNDS,
@@ -660,7 +643,6 @@ class Home extends Component {
         var intersectWater = raycaster.intersectObject(meshRay);
         // raycast water
         if (intersectWater.length > 0) {
-          // console.log("intersected water");
           var point = intersectWater[0].point;
           uniforms["mousePos"].value.set(point.x, point.z);
         } else {
@@ -683,7 +665,6 @@ class Home extends Component {
             intersected = intersectButtons[0].object;
             intersected.currentHex = intersected.material.emissive.getHex();
             intersected.material.emissive.setHex(0xff0000);
-            // console.log("intersected button");
           }
         } else {
           if (intersected)

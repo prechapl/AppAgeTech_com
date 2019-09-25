@@ -24,7 +24,7 @@ class About extends Component {
         <h4>Who We Are</h4>
         <p>Preston Chaplin, Co-Founder…</p>
         <p>William Griffin, Co-Founder…</p>
-        <Button>Button</Button>
+        <Button variant="danger">Button</Button>
         <button>button</button>
       </Container>
     );

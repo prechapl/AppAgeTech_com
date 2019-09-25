@@ -1,10 +1,17 @@
 .container {
   /* max-width: 100%; */
   display: flex;
-  flex-flow: column;
+  flex-flow: row;
   /* background-color: blueviolet; */
   justify-content: space-around;
   padding: 20px;
   margin: 20px;
   /* height: 100%; */
+}
+
+.col {
+  display: flex;
+  flex-flow: column;
+  /* justify-content: space-between; */
+  margin: 50px;
 }
