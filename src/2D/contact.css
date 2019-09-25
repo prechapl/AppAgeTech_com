@@ -1,0 +1,10 @@
+.container {
+  /* max-width: 100%; */
+  display: flex;
+  flex-flow: column;
+  /* background-color: blueviolet; */
+  justify-content: space-around;
+  padding: 20px;
+  margin: 20px;
+  /* height: 100%; */
+}

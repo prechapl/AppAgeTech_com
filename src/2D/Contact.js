@@ -1,46 +1,44 @@
 import React, { Component } from "react";
 import Container from "react-bootstrap/Container";
+import Jumbotron from "react-bootstrap/Jumbotron";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import "./contact.css";
 
 class Contact extends Component {
   render() {
     return (
-      <Container classNme="d-flex">
-        <Row className="align-items-center" style={{ backgroundColor: "red" }}>
-          <Col lg="6" style={{ backgroundColor: "green" }}>
-            <Row>
+      <Container className="container">
+        <Jumbotron>
+          <Row>
+            <Col>
               <h4>William Griffin</h4>
-            </Row>
-            <Row>
+
               <i>Los Angeles, California</i>
-            </Row>
-            <Row>
+              <br />
+
               <a href={`mailto: william@appagetech.com`}>
                 william@appagetech.com
               </a>
-            </Row>
-            <Row>
+              <br />
+
               <a href={`tel:949-632-3021`}>(949)632-3021 </a>
-            </Row>
-          </Col>
-          <Col md="6">
-            <Row>
+            </Col>
+            <Col>
               <h4>Preston Chaplin</h4>
-            </Row>
-            <Row>
+
               <i>New York, New York</i>
-            </Row>
-            <Row>
+              <br />
+
               <a href={`mailto: preston@appagetech.com`}>
                 preston@appagetech.com
               </a>
-            </Row>
-            <Row>
+              <br />
+
               <a href={`tel:646-271-3127`}>(646)271-3127 </a>
-            </Row>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </Jumbotron>
       </Container>
     );
   }

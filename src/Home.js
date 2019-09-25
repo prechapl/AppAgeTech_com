@@ -43,7 +43,8 @@ let landingScene;
 
 //this sets 2D scale - <h4> should be 16px in hieght
 // let zPosition2D = -2928;
-let zPosition2D = -1600;
+let zPosition2D = 215;
+// let zPosition2D = 0;
 let offScreenZPosition2D = 10000;
 
 const reactComponents = ["about", "contact", "projects", "client"];
@@ -119,6 +120,7 @@ class Home extends Component {
       opacity: 0.0,
       side: THREE.DoubleSide
     });
+
     var geometry = new THREE.PlaneGeometry(w, h);
     var mesh = new THREE.Mesh(geometry, material);
     mesh.position.x = position.x;
@@ -140,7 +142,6 @@ class Home extends Component {
   };
 
   initialize = () => {
-    //console.log("initialize fired!");
     camera = new THREE.PerspectiveCamera(
       30,
       window.innerWidth / window.innerHeight,
@@ -153,10 +154,11 @@ class Home extends Component {
     cssRenderer = this.createCssRenderer();
     container = document.createElement("div");
     document.body.appendChild(container);
-    container.appendChild(glRenderer.domElement);
     container.appendChild(cssRenderer.domElement);
+    container.appendChild(glRenderer.domElement);
     glScene = new THREE.Scene();
     cssScene = new THREE.Scene();
+    cssScene.scale.set(0.1, 0.1, 0.1);
 
     // Landing scene
     landingScene = new LandingTransition(
@@ -236,7 +238,7 @@ class Home extends Component {
       plane = this.createPlane(
         window.innerWidth,
         window.innerHeight,
-        new THREE.Vector3(0, 0, 200),
+        new THREE.Vector3(0, 0, 210),
         new THREE.Vector3(0, 0, 0)
       );
       glScene.add(plane);
