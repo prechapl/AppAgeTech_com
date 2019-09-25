@@ -60,7 +60,7 @@ class Home extends Component {
       landingPage: true,
       navPosition: "middle",
       moveNavBar: false,
-      cssComponentDisplayed: ''
+      cssComponentDisplayed: ""
     };
   }
 
@@ -70,52 +70,6 @@ class Home extends Component {
     this.update();
     // this.lighting();
   }
-
-  initialize = () => {
-    console.log("initialize fired!");
-    camera = new THREE.PerspectiveCamera(
-      30,
-      window.innerWidth / window.innerHeight,
-      0.25,
-      4000
-    );
-    camera.position.set(0, 0, 224);
-    camera.lookAt(0, 0, 0);
-    glRenderer = this.createGlRenderer();
-    cssRenderer = this.createCssRenderer();
-    container = document.createElement("div");
-    document.body.appendChild(container);
-    container.appendChild(cssRenderer.domElement);
-    cssRenderer.domElement.appendChild(glRenderer.domElement);
-    glScene = new THREE.Scene();
-    cssScene = new THREE.Scene();
-    // controls = new OrbitControls(camera, glRenderer.domElement);
-    // controls.target.set(0, 0, 0);
-    // controls.update();
-
-    reactComponents.forEach(item => {
-      let element = document.createElement("div");
-      element.id = item;
-      let object = new CSS3DObject(element);
-      object.position.z = zPosition2D;
-      cssScene.add(object);
-      reactComponentsObj[item] = object;
-    });
-
-    window.addEventListener("resize", this.onWindowResize, false);
-    document.addEventListener("mousemove", this.onDocumentMouseMove, false);
-    document.addEventListener("touchstart", this.onDocumentTouchStart, false);
-    document.addEventListener("touchmove", this.onDocumentTouchMove, false);
-    document.addEventListener("mousedown", this.onDocumentMouseDown, false);
-    cssRenderer.domElement.addEventListener("click", this.raycastCss, false);
-    cssRenderer.domElement.addEventListener(
-      "mousemove",
-      this.onDocumentMouseMoveCss,
-      false
-    );
-
-    this.initWater();
-  };
 
   raycastCss = () => {
     raycaster.setFromCamera(mouseCoords, camera);
@@ -232,7 +186,12 @@ class Home extends Component {
     if (this.state.show2D) {
       cssRenderer.domElement.style.zIndex = -1;
       glScene.remove(plane);
-      this.setState({ moveNavBar: true, cssComponentDisplayed:'', show2D: false, showWater: true });
+      this.setState({
+        moveNavBar: true,
+        cssComponentDisplayed: "",
+        show2D: false,
+        showWater: true
+      });
       Object.entries(reactComponentsObj).forEach(
         ([key, value]) => (value.position.z = offScreenZPosition2D)
       );
@@ -242,15 +201,28 @@ class Home extends Component {
   // Show react component
   showReactComponent = reactComponentName => {
     // Checks a second click: is the CSS renderer is visible
-    if (parseInt(cssRenderer.domElement.style.zIndex, 10) === 0 && this.state.cssComponentDisplayed === reactComponentName) {
+    if (
+      parseInt(cssRenderer.domElement.style.zIndex, 10) === 0 &&
+      this.state.cssComponentDisplayed === reactComponentName
+    ) {
       this.hideAllReactComponents();
-    } else if (parseInt(cssRenderer.domElement.style.zIndex, 10) === 0 && this.state.cssComponentDisplayed !== reactComponentName) {
-      reactComponentsObj[this.state.cssComponentDisplayed].position.z = offScreenZPosition2D;
+    } else if (
+      parseInt(cssRenderer.domElement.style.zIndex, 10) === 0 &&
+      this.state.cssComponentDisplayed !== reactComponentName
+    ) {
+      reactComponentsObj[
+        this.state.cssComponentDisplayed
+      ].position.z = offScreenZPosition2D;
       reactComponentsObj[reactComponentName].position.z = zPosition2D;
       this.setState({ cssComponentDisplayed: reactComponentName });
     } else {
       reactComponentsObj[reactComponentName].position.z = zPosition2D;
-      this.setState({ moveNavBar: true, cssComponentDisplayed: reactComponentName, show2D: true, showWater: false });
+      this.setState({
+        moveNavBar: true,
+        cssComponentDisplayed: reactComponentName,
+        show2D: true,
+        showWater: false
+      });
       plane = this.createPlane(
         window.innerWidth,
         window.innerHeight,
