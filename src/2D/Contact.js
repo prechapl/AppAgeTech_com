@@ -6,10 +6,9 @@ import Col from "react-bootstrap/Col";
 class Contact extends Component {
   render() {
     return (
-      <Container style={{ backgroundColor: "green" }}>
-        <Row>
-          {/* <Row className="align-items-center" style={{ backgroundColor: "red" }}> */}
-          <Col lg="6">
+      <Container classNme="d-flex">
+        <Row className="align-items-center" style={{ backgroundColor: "red" }}>
+          <Col lg="6" style={{ backgroundColor: "green" }}>
             <Row>
               <h4>William Griffin</h4>
             </Row>
